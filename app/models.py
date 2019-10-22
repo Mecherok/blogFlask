@@ -3,7 +3,7 @@ from datetime import  datetime
 import re
 
 def slugify(s):
-    pattern = r'[^\ws]'
+    pattern = r'[^\w+]'
     return  re.sub(pattern, '-', s)
 
 class Post(db.Model):
@@ -15,8 +15,11 @@ class Post(db.Model):
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
-        self.slug = self.generate_slug()
+        self.generate_slug()
 
     def generate_slug(self):
         if self.title:
             self.slug = slugify(self.title)
+
+    def __repr__(self):
+        return '<Post id: {}, title: {}>'.format(self.id, self.title)
