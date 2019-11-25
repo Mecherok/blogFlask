@@ -16,7 +16,7 @@ class Post(db.Model):
     title = db.Column(db.String(140))
     slug = db.Column(db.String(140), unique=True)
     body = db.Column(db.Text)
-    created = db.Column(db.DateTime, default=datetime.now())
+    created = db.Column(db.DateTime, default=datetime.now)
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
@@ -41,4 +41,4 @@ class Tag(db.Model):
         self.slug = slugify(self.name)
 
     def __repr__(self):
-        return '<Tag id: {}, name: {}>'.format(self.id, self.name)
+        return '{}'.format(self.name)
