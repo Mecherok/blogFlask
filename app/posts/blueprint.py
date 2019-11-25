@@ -1,4 +1,5 @@
 from flask import Blueprint
+from models import slugify
 from flask import render_template
 from models import Post, Tag
 from flask import request
@@ -21,13 +22,29 @@ def index():
         page = 1
 
     if q:
-        posts = Post.query.filter(Post.title.contains(q) | Post.body.contains(q)) #.all()
+        posts = Post.query.filter(Post.title.contains(q) | Post.body.contains(q))
     else:
         posts = Post.query.order_by(Post.id.desc())
 
     pages = posts.paginate(page = page, per_page = 5)
-
     return render_template('posts/index.html', posts = posts, pages = pages)
+
+@posts.route('/<slug>/edit', methods = ['POST', 'GET'])
+def edit_post(slug):
+    post = Post.query.filter(Post.slug == slug).first()
+
+    if request.method == 'POST':
+        form = PostForm(fromdata = request.form, obj = post)
+        post.title = request.form['title']
+        post.body = request.form['body']
+        post.slug = slugify(post.title);
+        db.session.commit()
+        form.populate_obj(post)
+
+        return redirect(url_for('posts.post_detail', slug = post.slug))
+
+    form = PostForm(obj = post)
+    return render_template('posts/edit_post.html', post = post, form = form)
 
 @posts.route('/create', methods = ['POST', 'GET'])
 def create_post():
